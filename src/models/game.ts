@@ -1,10 +1,10 @@
 import mongoose,{ Schema } from 'mongoose';
 import logging from '../config/logging';
-import IUser from '../interfaces/user';
+import IGame from '../interfaces/game';
 var uniqueValidator = require('mongoose-unique-validator');
 import crypto from 'crypto';
 
-const UserSchema: Schema = new Schema(
+const GameSchema: Schema = new Schema(
     {
         username: {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/^[a-zA-Z0-9]+$/, 'is invalid'], index: true},
         password: {type: String, required: [true, "can't be blank"]},
@@ -18,14 +18,14 @@ const UserSchema: Schema = new Schema(
     }
 );
 
-UserSchema.plugin(uniqueValidator, {message: 'is already taken.'});
+GameSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 
-UserSchema.pre<IUser>('save', function () {
+GameSchema.pre<IGame>('save', function () {
     this.salt = crypto.randomBytes(16).toString('hex');
     this.hash = crypto.pbkdf2Sync(this.password, this.salt, 10000, 512, 'sha512').toString('hex');
     this.password = "";
     this.score = 0;
-    logging.info('Mongo', 'User details set', this);
+    logging.info('Mongo', 'Game details set', this);
 })
 
-export default mongoose.model<IUser>('User', UserSchema);
+export default mongoose.model<IGame>('Game', GameSchema);
