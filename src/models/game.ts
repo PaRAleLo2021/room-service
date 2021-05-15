@@ -3,15 +3,15 @@ import logging from '../config/logging';
 import IGame from '../interfaces/game';
 var uniqueValidator = require('mongoose-unique-validator');
 import crypto from 'crypto';
+import PlayerSchema from '../models/player';
 
 const GameSchema: Schema = new Schema(
     {
-        username: {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/^[a-zA-Z0-9]+$/, 'is invalid'], index: true},
-        password: {type: String, required: [true, "can't be blank"]},
-        salt: {type: String},
-        hash: {type: String},
-        email: {type: String, lowercase: true, unique: true, required: [true, "can't be blank"], match: [/\S+@\S+\.\S+/, 'is invalid'], index: true},
-        score: {type: Number}
+        roomStatus: {type: Number, required: [true, "can't be blank"], match: [[0-3], 'is invalid']},
+        privateRoom: {type: Boolean, required: [true, "can't be blank"]},
+        players: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}],
+        unusedCards: [{type: Number, required: [true, "can't be blank"]}],
+        storytelledID: {type: String, required: [true, "can't be blank"], lowercase: true}
     },
     {
         timestamps: true
@@ -21,11 +21,8 @@ const GameSchema: Schema = new Schema(
 GameSchema.plugin(uniqueValidator, {message: 'is already taken.'});
 
 GameSchema.pre<IGame>('save', function () {
-    this.salt = crypto.randomBytes(16).toString('hex');
-    this.hash = crypto.pbkdf2Sync(this.password, this.salt, 10000, 512, 'sha512').toString('hex');
-    this.password = "";
-    this.score = 0;
     logging.info('Mongo', 'Game details set', this);
 })
 
 export default mongoose.model<IGame>('Game', GameSchema);
+

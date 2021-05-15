@@ -3,7 +3,7 @@ import controller from '../controllers/game';
 
 const router = express.Router();
 
-router.post('/register', controller.register);
-router.get('/get/all', controller.getAllGames);
+router.post('/add/game', controller.addGame);
+router.patch('/add/player', controller.addPlayer);
 
 export = router;
