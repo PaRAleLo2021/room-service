@@ -1,10 +1,13 @@
 import {Document} from 'mongoose';
-import player from '../interfaces/player';
 
 export default interface IGame extends Document{
     roomStatus: number;
     privateRoom: boolean;
-    players: player[];
+    players: {
+        userID: string;
+        score: number;
+        cards: number[]; 
+    }[];
     unusedCards: number[];
     storytellerID: string;
 }

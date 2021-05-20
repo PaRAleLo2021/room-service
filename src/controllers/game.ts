@@ -1,11 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import mongoose from 'mongoose';
-import logging from '../config/logging';
 import Game from '../models/game';
-import crypto from 'crypto';
-import Player from '../models/player';
-import game from '../models/game';
-import IPlayer from '../interfaces/player';
 
 const NAMESPACE = 'Games';
 
@@ -45,7 +40,7 @@ const addPlayerToGame = (req: Request, res: Response, next: NextFunction) => {
         cards: cards,
     };
     
-    let idVar = Game.findByIdAndUpdate(_id,{$push: {players: player}}, function(err, result){
+    let idVar = Game.findByIdAndUpdate(_id,{$push: {players: player}}, { new: true }, function(err, result){
         if(err){
             return res.status(500).json({
                 message: err.message,

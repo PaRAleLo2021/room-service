@@ -2,16 +2,14 @@ import mongoose,{ Schema } from 'mongoose';
 import logging from '../config/logging';
 import IGame from '../interfaces/game';
 var uniqueValidator = require('mongoose-unique-validator');
-import crypto from 'crypto';
-import PlayerSchema from '../models/player';
 
 const GameSchema: Schema = new Schema(
     {
         roomStatus: {type: Number, required: [true, "can't be blank"], match: [[0-3], 'is invalid']},
         privateRoom: {type: Boolean, required: [true, "can't be blank"]},
         players: [{
-            userID: {type: String},
-            score: {type: Number},
+            userID: {type: String, lowercase: true, required: [true, "can't be blank"]},
+            score: {type: Number, required: [true, "can't be blank"]},
             cards: [{type: Number}]
         }],
         unusedCards: [{type: Number, required: [true, "can't be blank"]}],
