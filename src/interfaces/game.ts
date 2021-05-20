@@ -6,5 +6,5 @@ export default interface IGame extends Document{
     privateRoom: boolean;
     players: player[];
     unusedCards: number[];
-    storytelledID: string;
+    storytellerID: string;
 }
