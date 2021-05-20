@@ -9,9 +9,13 @@ const GameSchema: Schema = new Schema(
     {
         roomStatus: {type: Number, required: [true, "can't be blank"], match: [[0-3], 'is invalid']},
         privateRoom: {type: Boolean, required: [true, "can't be blank"]},
-        players: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}],
+        players: [{
+            userID: {type: String},
+            score: {type: Number},
+            cards: [{type: Number}]
+        }],
         unusedCards: [{type: Number, required: [true, "can't be blank"]}],
-        storytelledID: {type: String, required: [true, "can't be blank"], lowercase: true}
+        storytellerID: {type: String, required: [true, "can't be blank"], lowercase: true}
     },
     {
         timestamps: true

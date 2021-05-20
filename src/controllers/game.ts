@@ -8,7 +8,7 @@ import Player from '../models/player';
 const NAMESPACE = 'Games';
 
 const addGame = (req: Request, res: Response, next: NextFunction) => {
-    let { roomStatus, privateRoom, players, unusedCards, storytelledID } = req.body;
+    let { roomStatus, privateRoom, players, unusedCards, storytellerID } = req.body;
 
     const game = new Game({
         _id: new mongoose.Types.ObjectId(),
@@ -16,13 +16,12 @@ const addGame = (req: Request, res: Response, next: NextFunction) => {
         privateRoom, 
         players, 
         unusedCards, 
-        storytelledID
+        storytellerID
     });
 
     return game
         .save()
         .then((result) => {
-            console.log("here");
             return res.status(201).json({
                 game: result
             });
@@ -36,43 +35,28 @@ const addGame = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const addPlayer = (req: Request, res: Response, next: NextFunction) => {
-    let { userID, score, cards, gameID } = req.body;
+    let { userID, score, cards, _id } = req.body;
 
-    const player = new Player({
-        _id: new mongoose.Types.ObjectId(),
-        userID,
-        score,
-        cards,
-    });
+    const player = {
+        userID: userID,
+        score: score,
+        cards: cards,
+    };
     
-    let idVar = Game.findOneAndUpdate({_id: gameID},{$push: {"players": player}}).then((result) => {
-        console.log("here");
-        return res.status(201).json({
-            game: result
-        });
-    })
-    .catch((error) => {
-        return res.status(500).json({
-            message: error.message,
-            error
-        });
+    let idVar = Game.findByIdAndUpdate(_id,{$push: {players: player}}, function(err, result){
+        if(err){
+            return res.status(500).json({
+                message: err.message,
+                err
+            });
+        }
+        else{
+            return res.status(201).json({
+                game: result
+            });
+        }
     });
     console.log(idVar);
-
-    // return game
-    //     .save()
-        // .then((result) => {
-        //     console.log("here");
-        //     return res.status(201).json({
-        //         game: result
-        //     });
-        // })
-        // .catch((error) => {
-        //     return res.status(500).json({
-        //         message: error.message,
-        //         error
-        //     });
-        // });
 };
 
 export default { addGame, addPlayer };
