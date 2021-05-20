@@ -11,7 +11,7 @@ const GameSchema: Schema = new Schema(
         privateRoom: {type: Boolean, required: [true, "can't be blank"]},
         players: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}],
         unusedCards: [{type: Number, required: [true, "can't be blank"]}],
-        storytelledID: {type: String, required: [true, "can't be blank"], lowercase: true}
+        storytellerID: {type: String, required: [true, "can't be blank"], lowercase: true}
     },
     {
         timestamps: true
