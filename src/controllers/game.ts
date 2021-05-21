@@ -5,7 +5,7 @@ import Game from '../models/game';
 const NAMESPACE = 'Games';
 
 const addGame = (req: Request, res: Response, next: NextFunction) => {
-    let { roomStatus, privateRoom, players, unusedCards, storytellerID } = req.body;
+    let { roomStatus, privateRoom, players, unusedCards, storytellerID, story, storytellerCard, winner } = req.body;
 
     const game = new Game({
         _id: new mongoose.Types.ObjectId(),
@@ -13,7 +13,10 @@ const addGame = (req: Request, res: Response, next: NextFunction) => {
         privateRoom, 
         players, 
         unusedCards, 
-        storytellerID
+        storytellerID,
+        story,
+        storytellerCard,
+        winner
     });
 
     return game
@@ -32,12 +35,14 @@ const addGame = (req: Request, res: Response, next: NextFunction) => {
 };
 
 const addPlayerToGame = (req: Request, res: Response, next: NextFunction) => {
-    let { userID, score, cards, _id } = req.body;
+    let { userID, score, cards, playedCard, votedCard, _id } = req.body;
 
     const player = {
         userID: userID,
         score: score,
         cards: cards,
+        playedCard,
+        votedCard
     };
     
     let idVar = Game.findByIdAndUpdate(_id,{$push: {players: player}}, { new: true }, function(err, result){
@@ -72,4 +77,35 @@ const getGame = (req: Request, res: Response, next: NextFunction) => {
     });
 };
 
-export default { addGame, addPlayerToGame, getGame };
+const updateGame = (req: Request, res: Response, next: NextFunction) => {
+    let { roomStatus, privateRoom, players, unusedCards, storytellerID, story, storytellerCard, winner, _id } = req.body;
+
+    const game = new Game({
+        _id,
+        roomStatus, 
+        privateRoom, 
+        players, 
+        unusedCards, 
+        storytellerID,
+        story,
+        storytellerCard,
+        winner
+    });
+
+    let idVar = Game.findByIdAndUpdate(_id,{$set: {_id: _id, roomStatus: roomStatus, privateRoom: privateRoom, players: players, unusedCards: unusedCards, storytellerID: storytellerID, story: story, storytellerCard: storytellerCard, winner: winner}}, { new: true }, function(err, result){
+        if(err){
+            return res.status(500).json({
+                message: err.message,
+                err
+            });
+        }
+        else{
+            return res.status(201).json({
+                game: result
+            });
+        }
+    });
+    console.log(idVar);
+};
+
+export default { addGame, addPlayerToGame, getGame, updateGame };

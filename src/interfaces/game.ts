@@ -7,7 +7,12 @@ export default interface IGame extends Document{
         userID: string;
         score: number;
         cards: number[]; 
+        playedCard: string;
+        votedCard: string;
     }[];
     unusedCards: number[];
     storytellerID: string;
+    story: string;
+    storytellerCard: string;
+    winner: string[];
 }

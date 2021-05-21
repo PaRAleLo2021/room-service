@@ -8,12 +8,17 @@ const GameSchema: Schema = new Schema(
         roomStatus: {type: Number, required: [true, "can't be blank"], match: [[0-3], 'is invalid']},
         privateRoom: {type: Boolean, required: [true, "can't be blank"]},
         players: [{
-            userID: {type: String, lowercase: true, required: [true, "can't be blank"]},
+            userID: {type: String, required: [true, "can't be blank"]},
             score: {type: Number, required: [true, "can't be blank"]},
-            cards: [{type: Number}]
+            cards: {type: [Number]},
+            playedCard: {type: String, required: [true, "can't be blank"]},
+            votedCard: {type: String, required: [true, "can't be blank"]}
         }],
-        unusedCards: [{type: Number, required: [true, "can't be blank"]}],
-        storytellerID: {type: String, required: [true, "can't be blank"], lowercase: true}
+        unusedCards: {type: [Number], required: [true, "can't be blank"]},
+        storytellerID: {type: String, required: [true, "can't be blank"]},
+        story: {type: String, required: [true, "can't be blank"]},
+        storytellerCard: {type: String, required: [true, "can't be blank"]},
+        winner: {type: [String], required: [true, "can't be blank"]}
     },
     {
         timestamps: true
