@@ -108,4 +108,43 @@ const updateGame = (req: Request, res: Response, next: NextFunction) => {
     console.log(idVar);
 };
 
-export default { addGame, addPlayerToGame, getGame, updateGame };
+const joinPublic = (req: Request, res: Response, next: NextFunction) => {
+    let { userID, score, cards, playedCard, votedCard } = req.body;
+
+    const player = {
+        userID: userID,
+        score: score,
+        cards: cards,
+        playedCard,
+        votedCard
+    };
+
+    Game.countDocuments({privateRoom: false, roomStatus: { $in: [0, 1] },  "players.3": { "$exists": false}}, function(err, count){
+        if(count!=1)
+        {
+            return res.status(500).json({
+                message: "err",
+                err
+            });
+        }
+        else
+        {
+            let game = Game.findOneAndUpdate({privateRoom: false},{$push: {players: player}}, { new: true }, function(err, result){
+                if(err){
+                    return res.status(500).json({
+                        message: err.message,
+                        err
+                    });
+                }
+                else{
+                    return res.status(201).json({
+                        game: result
+                    });
+                }
+            });
+            console.log(game);
+        }
+    });
+};
+
+export default { addGame, addPlayerToGame, getGame, updateGame, joinPublic };

@@ -7,5 +7,6 @@ router.post('/add/game', controller.addGame);
 router.patch('/add/player', controller.addPlayerToGame);
 router.get('/get/game', controller.getGame);
 router.patch('/update/game', controller.updateGame);
+router.patch('/join/game', controller.joinPublic);
 
 export = router;
