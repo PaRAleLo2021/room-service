@@ -34,7 +34,7 @@ const addGame = (req: Request, res: Response, next: NextFunction) => {
         });
 };
 
-const addPlayerToGame = (req: Request, res: Response, next: NextFunction) => {
+const addPlayerToGame = async (req: Request, res: Response, next: NextFunction) => {
     let { userID, score, cards, playedCard, votedCard, _id } = req.body;
 
     const player = {
@@ -45,6 +45,24 @@ const addPlayerToGame = (req: Request, res: Response, next: NextFunction) => {
         votedCard
     };
     
+    let g = await Game.findById(_id);
+    if (g==null)
+    {
+        return res.status(500).json({
+            message: "error"
+        });
+    }
+    for(var i=0;i<g.players.length;i++)
+        if(g.players[i].userID===player.userID)
+            return res.status(500).json({
+                message: "user exists",
+                game: g
+            });
+    if(g.players.length==4)
+    return res.status(500).json({
+        message: "game full : too many users"
+    });
+
     let idVar = Game.findByIdAndUpdate(_id,{$push: {players: player}}, { new: true }, function(err, result){
         if(err){
             return res.status(500).json({
