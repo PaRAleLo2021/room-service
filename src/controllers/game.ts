@@ -139,7 +139,7 @@ const joinPublic = async (req: Request, res: Response, next: NextFunction) => {
         votedCard
     };
 
-    await Game.countDocuments({privateRoom: false}, function(err, count){
+    await Game.countDocuments({privateRoom: false, roomStatus: { $in: [0, 1] },  "players.3": { "$exists": false}}, function(err, count){
         if(count==0)
         {
             empty=true;
@@ -171,7 +171,7 @@ const joinPublic = async (req: Request, res: Response, next: NextFunction) => {
         }
     });
     if(empty==false)
-        await Game.countDocuments({privateRoom: false, roomStatus: { $in: [0, 1] },  "players.3": { "$exists": false}}, function(err, count){
+        await Game.countDocuments({privateRoom: false, roomStatus: { $in: [0, 1] },  "players.3": { "$exists": false}}, async function(err, count){
             if(count!=1)
             {
                 return res.status(500).json({
@@ -181,6 +181,19 @@ const joinPublic = async (req: Request, res: Response, next: NextFunction) => {
             }
             else
             {
+                let g = await Game.findOne({privateRoom: false});
+                if (g==null)
+                {
+                    return res.status(500).json({
+                        message: "error"
+                    });
+                }
+                for(var i=0;i<g.players.length;i++)
+                    if(g.players[i].userID===player.userID)
+                        return res.status(500).json({
+                            message: "user exists",
+                            game: g
+                        });
                 let game = Game.findOneAndUpdate({privateRoom: false},{$push: {players: player}}, { new: true }, function(err, result){
                     if(err){
                         return res.status(500).json({
